@@ -1,0 +1,17 @@
+{
+  "name": "mentalhealth",
+  "version": "1.0.0",
+  "description": "mentalHealth application",
+  "main": "index.js",
+  "scripts": {
+    "test": "nodemon index.js"
+  },
+  "author": "karan kumar shah",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.8.4",
+    "nodemon": "^3.1.7"
+  }
+}
