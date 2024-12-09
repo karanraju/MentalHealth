@@ -1,74 +1,54 @@
-// // const express = require("express");
-// // const mongoose = require("mongoose");
-// // const dotenv = require("dotenv");
-
-// // const app = express();
-// // dotenv.config();
-// // const mongoDB = "mongodb://localhost:27017/mentalHealthDataBase";
-
-// // const PORT = 5000;
-
-// // async function connectDB() {
-// //   try {
-// //     await mongoose.connect("mongodb://localhost:27017/MentalHealthDb");
-// //     console.log("Connected to MongoDB");
-// //   } catch (err) {
-// //     console.error("Failed to connect to MongoDB", err);
-// //   }
-// // }
-
-// // const userSchema = new mongoose.Schema({
-// //   name: String,
-// //   age: Number,
-// // });
-
-// // const UserModel=mongoose.model("UserData",userSchema)
-
-// // app.get("/getUsers",async(req,res)=>{
-// //     const userData=await UserModel.find();
-// //     console.log("fuhf",userData)
-// //     res.json(userData);
-// // });
-
-// // connectDB();
-// // app.listen(5000, () => {
-// //   console.log("Server is running");
-// // });
-
-// const mongoose = require("mongoose");
-
-// const connectDB = async () => {
-//   try {
-//     await mongoose.connect("mongodb://localhost:27017/mydatabase", {
-//       useNewUrlParser: true,
-//       useUnifiedTopology: true,
-//     });
-//     console.log("MongoDB Connected...");
-//   } catch (err) {
-//     console.error(err.message);
-//     process.exit(1); // Exit process with failure
-//   }
-// };
-
-// module.exports = connectDB;
-
-require("dotenv").config();
 const express = require("express");
-const bodyParser = require("body-parser");
-const connectDB = require("./db");
-const userRoutes = require("./routes/userRoutes");
+const mongoose = require("mongoose");
 
+// Initialize Express
 const app = express();
-
-// Connect to MongoDB
-connectDB();
+const PORT = 3000;
 
 // Middleware
-app.use(bodyParser.json());
+app.use(express.json());
 
-// Routes
-app.use("/api/users", userRoutes);
+// MongoDB connection string
+const mongoURI = "mongodb://localhost:27017/mydatabase"; // Replace 'mydatabase' with your database name
+
+// Connect to MongoDB
+mongoose
+  .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.error("MongoDB connection error:", err));
+
+// Define a Schema and Model
+const itemSchema = new mongoose.Schema({
+  name: String,
+  price: Number,
+});
+
+const Item = mongoose.model("Item", itemSchema);
+
+// Seed the database (optional)
+const seedDatabase = async () => {
+  const count = await Item.countDocuments();
+  if (count === 0) {
+    await Item.create([
+      { name: "Apple", price: 1.2 },
+      { name: "Banana", price: 0.8 },
+    ]);
+    console.log("Database seeded");
+  }
+};
+seedDatabase();
+
+// Define GET route
+app.get("/items", async (req, res) => {
+  try {
+    const items = await Item.find();
+    res.json(items);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch items" });
+  }
+});
 
 // Start the server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
