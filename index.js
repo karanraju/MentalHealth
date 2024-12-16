@@ -35,10 +35,39 @@ const TherapistsSchema = new mongoose.Schema({
   Rating: String,
 });
 
+const DoctorSchema = new mongoose.Schema({
+  Id: Number,
+  User_id: Number,
+  Category_id: Number,
+  Qualification: String,
+  Experience: Number,
+  Specialty: String,
+  Is_Available: String,
+});
+const DoctorCategorySchema = new mongoose.Schema({
+  Id: Number,
+  Name: String,
+  Type: String,
+  isActive: Boolean,
+});
+
 const DepartmentSchema = new mongoose.Schema({
   Id: Number,
   Departments: String,
   Description: String,
+});
+
+const TherapySchema = new mongoose.Schema({
+  Id: Number,
+  Doctor_id: String,
+  Patient_id: String,
+  reason: String,
+  timeSlotId: Number,
+  Date: String,
+  StartTime: String,
+  endTime: String,
+  attendendedStatus: Boolean,
+  type: Boolean,
 });
 
 const DateSchema = new mongoose.Schema({
@@ -86,6 +115,9 @@ const UserData = mongoose.model("UserData", itemSchema);
 const TherapistsData = mongoose.model("TherapistData", TherapistsSchema);
 const Department = mongoose.model("Department", DepartmentSchema);
 const Date = mongoose.model("Date", DateSchema);
+const Doctor = mongoose.model("Doctor", DoctorSchema);
+const DoctorCategory = mongoose.model("DoctorCatogray", DoctorCategorySchema);
+const Therapy = mongoose.model("Therapy", TherapySchema);
 
 // Seed the database (optional)
 const seedDatabase = async () => {
@@ -174,10 +206,67 @@ const seedTherapistsData = async () => {
   }
 };
 
+const doctorData = async () => {
+  const count = await Doctor.countDocuments();
+  if (count === 0) {
+    await Doctor.create([
+      {
+        Id: 1,
+        User_id: 2,
+        Category_id: 2,
+        Qualification: "MBBS",
+        Experience: 2,
+        Specialty: "Mbbs Doctor",
+        Is_Available: "yes",
+      },
+    ]);
+    console.log("Database seeded");
+  }
+};
+
+const doctorCategoryData = async () => {
+  const count = await DoctorCategory.countDocuments();
+  if (count === 0) {
+    await DoctorCategory.create([
+      {
+        Id: 1,
+        Name: "Dr.Karan",
+        Type: "Doctor",
+        isActive: "yes",
+      },
+    ]);
+    console.log("Database seeded");
+  }
+};
+
+const TherapyData = async () => {
+  const count = await Therapy.countDocuments();
+  if (count === 0) {
+    await Therapy.create([
+      {
+        Id: 1,
+        Doctor_id: 1,
+        Patient_id: 1,
+        reason: "mental Health",
+        timeSlotId: 2,
+        Date: "2034/12/04",
+        StartTime: "11:00",
+        endTime: "12:00",
+        attendendedStatus: "yes",
+        type: "yes",
+      },
+    ]);
+    console.log("Database seeded");
+  }
+};
+
 seedDatabase();
 seedTherapistsData();
 seedDepartment();
 seedDatebase();
+doctorData();
+doctorCategoryData();
+TherapyData();
 
 // Define GET route
 app.get("/User", async (req, res) => {
@@ -204,7 +293,7 @@ app.post("/department", async (req, res) => {
     if (!Id) {
       return res.status(400).json({ message: "id is required." });
     }
-  console.log(Id, Departments, Description)
+    console.log(Id, Departments, Description);
     // Insert document using the `insertMany()` function
     const newDepartment = await Department.create([
       { Id, Departments, Description },
