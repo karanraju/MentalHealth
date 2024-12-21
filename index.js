@@ -1,6 +1,9 @@
 const express = require("express");
 const mongoose = require("mongoose");
 
+const { Department, Doctor } = require("./models/DoctorSchema");
+const doctorRoutes = require("./routes/doctorRoutes");
+
 // Initialize Express
 const app = express();
 const PORT = 3000;
@@ -35,26 +38,11 @@ const TherapistsSchema = new mongoose.Schema({
   Rating: String,
 });
 
-const DoctorSchema = new mongoose.Schema({
-  Id: Number,
-  User_id: Number,
-  Category_id: Number,
-  Qualification: String,
-  Experience: Number,
-  Specialty: String,
-  Is_Available: String,
-});
 const DoctorCategorySchema = new mongoose.Schema({
   Id: Number,
   Name: String,
   Type: String,
   isActive: Boolean,
-});
-
-const DepartmentSchema = new mongoose.Schema({
-  Id: Number,
-  Departments: String,
-  Description: String,
 });
 
 const TherapySchema = new mongoose.Schema({
@@ -113,9 +101,7 @@ const DateSchema = new mongoose.Schema({
 
 const UserData = mongoose.model("UserData", itemSchema);
 const TherapistsData = mongoose.model("TherapistData", TherapistsSchema);
-const Department = mongoose.model("Department", DepartmentSchema);
 const Date = mongoose.model("Date", DateSchema);
-const Doctor = mongoose.model("Doctor", DoctorSchema);
 const DoctorCategory = mongoose.model("DoctorCatogray", DoctorCategorySchema);
 const Therapy = mongoose.model("Therapy", TherapySchema);
 
@@ -212,12 +198,18 @@ const doctorData = async () => {
     await Doctor.create([
       {
         Id: 1,
-        User_id: 2,
+        User_id: 1,
         Category_id: 2,
-        Qualification: "MBBS",
-        Experience: 2,
-        Specialty: "Mbbs Doctor",
+        Qualification: "Bacholar",
+        Specialty: "Therapist",
+        Experience: 5,
         Is_Available: "yes",
+        Name: "Hari KHadkaa",
+        NMC_No: "45679",
+        price: [{ Appointment_Price: 100, therapist_price: 200 }],
+
+        Description:
+          "If you're referring to handling a Git workflow on the backend, here's how you can manage tasks commonly associated with Git in a backend environment:",
       },
     ]);
     console.log("Database seeded");
@@ -278,36 +270,91 @@ app.get("/User", async (req, res) => {
   }
 });
 
-// const departmentSchema = new mongoose.Schema({
-//   name: { type: String },
-//   description: { type: String },
+app.use("/api", doctorRoutes);
+
+// app.post("/department", async (req, res) => {
+//   try {
+//     const { Id, Departments, Description } = req.body;
+
+//     // Validate input data
+//     if (!Id) {
+//       return res.status(400).json({ message: "id is required." });
+//     }
+//     console.log(Id, Departments, Description);
+//     // Insert document using the `insertMany()` function
+//     const newDepartment = await Department.create([
+//       { Id, Departments, Description },
+//     ]);
+
+//     res.status(201).json({
+//       message: "Department created successfully.",
+//       data: newDepartment,
+//     });
+//   } catch (error) {
+//     console.error("Error inserting department:", error);
+//     res.status(500).json({ message: "Internal server error.", error });
+//   }
 // });
 
-// const Department = mongoose.model("Department", departmentSchema);
+// app.post("/doctor", async (req, res) => {
+//   try {
+//     const {
+//       Id,
+//       User_id,
+//       Category_id,
+//       Qualification,
+//       Specialty,
+//       Experience,
+//       Is_Available,
+//       Name,
+//       NMC_No,
+//       price,
+//       Description,
+//     } = req.body;
 
-app.post("/department", async (req, res) => {
-  try {
-    const { Id, Departments, Description } = req.body;
+//     // Validate input data
+//     if (!Id) {
+//       return res.status(400).json({ message: "id is required." });
+//     }
+//     console.log(
+//       Id,
+//       User_id,
+//       Category_id,
+//       Qualification,
+//       Specialty,
+//       Experience,
+//       Is_Available,
+//       Name,
+//       NMC_No,
+//       price,
+//       Description
+//     );
+//     // Insert document using the `insertMany()` function
+//     const newDoctor = await Doctor.create([
+//       {
+//         Id,
+//         User_id,
+//         Category_id,
+//         Qualification,
+//         Specialty,
+//         Experience,
+//         Is_Available,
+//         Name,
+//         NMC_No,
+//         price,
+//         Description,
+//       },
+//     ]);
 
-    // Validate input data
-    if (!Id) {
-      return res.status(400).json({ message: "id is required." });
-    }
-    console.log(Id, Departments, Description);
-    // Insert document using the `insertMany()` function
-    const newDepartment = await Department.create([
-      { Id, Departments, Description },
-    ]);
-
-    res.status(201).json({
-      message: "Department created successfully.",
-      data: newDepartment,
-    });
-  } catch (error) {
-    console.error("Error inserting department:", error);
-    res.status(500).json({ message: "Internal server error.", error });
-  }
-});
+//     res.status(201).json({
+//       message: "DoctorData created successfully.",
+//       data: newDoctor,
+//     });
+//   } catch (error) {
+//     console.error("Error inserting department:", error);
+//     res.status(500).json({ message: "Internal server error.", error });
+//   }
+// });
 
 // Start the server
 app.listen(PORT, () => {
